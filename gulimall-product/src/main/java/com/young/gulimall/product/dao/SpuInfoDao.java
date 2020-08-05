@@ -1,7 +1,7 @@
 package com.young.gulimall.product.dao;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.young.gulimall.product.entity.SpuInfoEntity;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
  * 
  * @author young
  * @email shineyoung1991@gmail.com
- * @date 2020-08-04 15:00:06
+ * @date 2020-08-05 15:05:49
  */
 @Mapper
 public interface SpuInfoDao extends BaseMapper<SpuInfoEntity> {

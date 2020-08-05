@@ -1,0 +1,26 @@
+server:
+  port: 11000
+
+spring:
+  application:
+    name: gulimall-ware
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://106.14.188.11:3306/gulimall_wms?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: YZw19910929
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 106.14.188.11:8848
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  #  配置主键自增
+  global-config:
+    db-config:
+      id-type: auto
+
+  # mybatis 的日志
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
