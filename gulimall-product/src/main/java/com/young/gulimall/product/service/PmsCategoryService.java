@@ -20,5 +20,6 @@ public interface PmsCategoryService extends IService<PmsCategoryEntity> {
 
     List<PmsCategoryEntity> listTree();
 
+    void removeByTreeIds(List<Long> asList);
 }
 

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import com.young.gulimall.product.entity.PmsCategoryEntity;
@@ -25,6 +27,8 @@ import com.young.common.utils.ResponseResult;
 public class PmsCategoryController {
     @Autowired
     private PmsCategoryService pmsCategoryService;
+    @Autowired
+    private RedisTemplate<String, List<PmsCategoryEntity>> redisTemplate;
 
     /**
      * 列表
@@ -38,8 +42,11 @@ public class PmsCategoryController {
 
     @GetMapping("/list/tree")
     public ResponseResult listTree() {
-
-        List<PmsCategoryEntity> entitiesTree = pmsCategoryService.listTree();
+        List<PmsCategoryEntity> entitiesTree =(List<PmsCategoryEntity>) redisTemplate.opsForHash().get("categoryTree", "categoryTree");
+        if(CollectionUtils.isEmpty(entitiesTree)){
+            entitiesTree = pmsCategoryService.listTree();
+            redisTemplate.opsForHash().putIfAbsent("categoryTree","categoryTree",entitiesTree);
+        }
         return ResponseResult.ok().put("tree", entitiesTree);
     }
 
@@ -59,9 +66,13 @@ public class PmsCategoryController {
      */
     @RequestMapping("/save")
     public ResponseResult save(@RequestBody PmsCategoryEntity pmsCategory) {
-        pmsCategoryService.save(pmsCategory);
 
-        return ResponseResult.ok();
+        boolean save = pmsCategoryService.save(pmsCategory);
+        if(save){
+            redisTemplate.delete("categoryTree");
+            return ResponseResult.ok();
+        }
+        return ResponseResult.error();
     }
 
     /**
@@ -77,10 +88,9 @@ public class PmsCategoryController {
     /**
      * 删除
      */
-    @RequestMapping("/delete")
+    @RequestMapping(value = "/delete",method = RequestMethod.POST)
     public ResponseResult delete(@RequestBody Long[] catIds) {
-        pmsCategoryService.removeByIds(Arrays.asList(catIds));
-
+        pmsCategoryService.removeByTreeIds(Arrays.asList(catIds));
         return ResponseResult.ok();
     }
 

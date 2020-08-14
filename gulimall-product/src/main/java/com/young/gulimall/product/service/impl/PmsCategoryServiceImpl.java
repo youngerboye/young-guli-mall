@@ -1,7 +1,10 @@
 package com.young.gulimall.product.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +28,7 @@ public class PmsCategoryServiceImpl extends ServiceImpl<PmsCategoryDao, PmsCateg
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<PmsCategoryEntity> page = this.page(
                 new Query<PmsCategoryEntity>().getPage(params),
-                new QueryWrapper<PmsCategoryEntity>()
+                new QueryWrapper<>()
         );
 
         return new PageUtils(page);
@@ -43,10 +46,15 @@ public class PmsCategoryServiceImpl extends ServiceImpl<PmsCategoryDao, PmsCateg
         return parentList;
     }
 
+    @Override
+    public void removeByTreeIds(List<Long> asList) {
+        //todo 检查idList是否有需要检查的地方
+        this.baseMapper.deleteBatchIds(asList);
+    }
+
     private List<PmsCategoryEntity> getChild(PmsCategoryEntity root, List<PmsCategoryEntity> parentList) {
-        List<PmsCategoryEntity> child = parentList.stream().filter(e -> {
-            return e.getParentCid().equals(root.getCatId());
-        }).map(e -> {
+        List<PmsCategoryEntity> child = parentList.stream().filter(e ->
+                e.getParentCid().equals(root.getCatId())).map(e -> {
             //找到子菜单
             e.setChildren(getChild(e, parentList));
             return e;
